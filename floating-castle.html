@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>THE MYSTERY OF FLOATING CASTLE</title>
+<style>
+:root{--sky:#8be4ff;--violet:#9c7bff;--gold:#ffd978;--ink:#18234b;--panel:rgba(17,27,69,.91);--mint:#6ef0d0}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#7bd8fa;color:#fff}
+button{font:inherit;cursor:pointer;border:0;color:#fff;font-weight:800;letter-spacing:.2px;transition:transform .12s,filter .12s}button:hover{filter:brightness(1.12);transform:translateY(-1px)}button:active{transform:scale(.97)}
+#game{position:relative;width:100%;height:100%;isolation:isolate;background:linear-gradient(#4f9df4,#b7f2ff 65%,#eefcff)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#hud{position:absolute;inset:0;top:48px;pointer-events:none;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
+.game-navbar{position:absolute;top:0;left:0;right:0;height:48px;background:rgba(14,24,56,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:100;box-shadow:0 4px 18px rgba(0,0,0,0.35);pointer-events:auto}
+.nav-back-btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#ffe084,#d49f37);color:#111b33;font-weight:900;font-size:12px;padding:7px 14px;border-radius:10px;text-decoration:none;box-shadow:0 3px 12px rgba(212,159,55,0.35);transition:transform .15s}
+.nav-back-btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.nav-game-title{font-size:12px;font-weight:800;letter-spacing:1px;color:#d5ebff}
+.nav-home-pill{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none}
+.topbar{display:flex;gap:9px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.glass{background:rgba(18,31,75,.78);border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 24px #17356c26;backdrop-filter:blur(8px);border-radius:16px}
+.brand{padding:10px 14px;max-width: min(460px,70vw)}.brand strong{display:block;font-size:clamp(11px,1.8vw,16px);letter-spacing:1.1px;color:#ffe8a4}.brand small{opacity:.88;font-size:11px}
+.stats{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.stat{padding:9px 11px;font-size:12px;white-space:nowrap}.stat b{color:#ffe38a}
+#quest{position:absolute;left:14px;top:88px;padding:12px 14px;width:min(265px,44vw);pointer-events:none}.eyebrow{font-size:10px;letter-spacing:1.5px;color:#8cefe1;font-weight:900}.quest-title{font-weight:900;font-size:14px;margin:3px 0}.quest-desc{font-size:11px;line-height:1.45;opacity:.9}
+#hint{position:absolute;left:50%;top:16%;transform:translateX(-50%);padding:8px 14px;background:#14214bd9;border:1px solid #ffffff42;border-radius:99px;font-size:12px;text-align:center;max-width:85vw;opacity:0;transition:opacity .25s;pointer-events:none}
+#bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+#message{padding:10px 13px;font-size:12px;max-width: min(420px,52vw);min-height:40px;line-height:1.4}
+#controls{display:flex;gap:7px;pointer-events:auto;align-items:flex-end}
+.pad{display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,38px);gap:4px}
+.pad button,.action{background:#172b6bd9;border:1px solid #ffffff50;border-radius:12px;box-shadow:0 4px 0 #0b164b;color:white;touch-action:none}
+.pad button{font-size:17px}.pad .up{grid-column:2}.pad .left{grid-column:1;grid-row:2}.pad .down{grid-column:2;grid-row:2}.pad .right{grid-column:3;grid-row:2}
+.action{padding:11px 13px;background:linear-gradient(135deg,#7658e8,#328edb);font-size:12px;min-height:42px}
+#overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:14px;background:#101b3b82;backdrop-filter:blur(5px);z-index:10;pointer-events:auto}
+#overlay.show{display:flex}.modal{width:min(650px,96vw);max-height:92vh;overflow:auto;background:linear-gradient(150deg,#202e69f7,#30235ef7);border:1px solid #ffffff50;border-radius:23px;padding:clamp(17px,4vw,29px);box-shadow:0 20px 70px #111b4b70;position:relative}
+.modal h1,.modal h2{margin:4px 0 10px;line-height:1.12}.modal h1{font-size:clamp(23px,5vw,38px)}.modal h2{font-size:clamp(20px,4vw,29px)}.modal p{line-height:1.6;color:#e5edff;font-size:14px}.modal .sub{color:#9ceee4;text-transform:uppercase;font-weight:900;font-size:10px;letter-spacing:2px}
+.modal button.primary{background:linear-gradient(135deg,#ffcf69,#f18e47);color:#2b2252;border-radius:12px;padding:11px 17px;margin:5px 5px 0 0}
+.modal button.secondary{background:#5266a7;border-radius:12px;padding:11px 15px;margin:5px 5px 0 0}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:16px 0}.options button{text-align:left;padding:12px;border-radius:12px;background:#35447f;border:1px solid #ffffff30;font-size:13px}.options button.correct{background:#147d72}.options button.wrong{background:#9b3f69}
+.diagram{margin:12px auto;padding:7px;background:#111b40;border-radius:14px;max-width:360px}.diagram svg{display:block;width:100%;height:auto}
+.progress{height:7px;border-radius:99px;background:#ffffff22;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,#63f0d4,#ffdf7c);width:0;transition:width .4s}
+#startScreen{position:absolute;inset:0;top:48px;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(180deg,#14255a22,#17265b70);pointer-events:auto}
+.startcard{width:min(720px,96vw);text-align:center;padding:clamp(22px,5vw,46px);border-radius:28px;background:linear-gradient(145deg,#15285ceF,#4b2c82eF);border:1px solid #ffffff55;box-shadow:0 20px 80px #12204c66}
+.logo{font-size:clamp(35px,8vw,68px);line-height:.96;font-weight:1000;letter-spacing:-2px;text-shadow:0 4px 0 #4a3b8a,0 8px 22px #090e3c; margin:8px 0}.logo span{color:#ffe29a}.startcard p{max-width:550px;margin:16px auto;color:#e0edff;line-height:1.6;font-size:14px}.startcard .primary{background:linear-gradient(135deg,#ffe18b,#ff9e59);color:#29204f;border-radius:14px;padding:14px 25px;font-size:15px;margin:5px}.startcard .secondary{background:#ffffff20;border:1px solid #ffffff4a;border-radius:14px;padding:13px 20px;margin:5px}.pills{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:15px 0}.pills span{font-size:11px;background:#ffffff16;border:1px solid #ffffff26;border-radius:99px;padding:6px 10px}
+#toast{position:absolute;left:50%;bottom:100px;transform:translateX(-50%);padding:10px 16px;border-radius:99px;background:#132453ed;border:1px solid #ffffff45;font-size:12px;font-weight:800;opacity:0;transition:opacity .25s;pointer-events:none;z-index:8;white-space:nowrap}
+@media(max-width:650px){.nav-game-title{display:none}.nav-back-btn{font-size:11px;padding:5px 9px}.game-navbar{height:42px;padding:0 8px}#hud,#startScreen{top:42px}#quest{top:96px;width:185px;padding:9px 10px}.quest-title{font-size:12px}.quest-desc{font-size:10px}.brand{max-width:58vw}.brand small{display:none}.stat{padding:7px 8px;font-size:10px}.stats{gap:4px}#message{font-size:10px;max-width:40vw;padding:8px;min-height:35px}.pad{grid-template-columns:repeat(3,36px);grid-template-rows:repeat(2,34px)}.pad button{font-size:15px}.action{padding:9px;font-size:10px;min-height:38px}#controls{gap:5px}.options{grid-template-columns:1fr}.modal p{font-size:13px}#toast{bottom:95px;max-width:90vw;white-space:normal;text-align:center}}
+@media(min-width:900px){.pad{opacity:.86}}
+</style>
+</head>
+<body>
+<div id="game">
+<nav class="game-navbar">
+ <a href="index.html" class="nav-back-btn" title="Kembali ke Landing Page Utama">
+  <span>⇦</span>
+  <span>Kembali ke Landing Page</span>
+ </a>
+ <div class="nav-game-title">✦ THE MYSTERY OF FLOATING CASTLE</div>
+ <a href="index.html" class="nav-home-pill" title="Ke Beranda Utama">⌂ Beranda</a>
+</nav>
+<canvas id="world"></canvas>
+<div id="hud">
+ <div class="topbar">
+  <div class="brand glass"><strong>✦ THE MYSTERY OF FLOATING CASTLE</strong><small>Petualangan Misteri Kerajaan Langit</small></div>
+  <div class="stats">
+   <div class="stat glass">💎 Kristal <b id="crystalCount">0/5</b></div>
+   <div class="stat glass">🪙 Koin <b id="coinCount">0</b></div>
+   <div class="stat glass">⭐ Skor <b id="scoreCount">0</b></div>
+  </div>
+ </div>
+ <div id="quest" class="glass"><div class="eyebrow">MISI AKTIF</div><div class="quest-title" id="questTitle">Temui Putri Elara</div><div class="quest-desc" id="questDesc">Gunakan tombol arah untuk menjelajah.</div><div class="progress"><span id="questProgress"></span></div></div>
+ <div id="hint"></div>
+ <div id="bottom">
+  <div id="message" class="glass">Selamat datang di Aerolith! Jelajahi pulau dan dekati karakter atau benda bercahaya.</div>
+  <div id="controls">
+   <div class="pad">
+    <button class="up" data-move="up" aria-label="Atas">▲</button><button class="left" data-move="left" aria-label="Kiri">◀</button><button class="down" data-move="down" aria-label="Bawah">▼</button><button class="right" data-move="right" aria-label="Kanan">▶</button>
+   </div>
+   <button class="action" id="interact">✦ INTERAKSI</button>
+  </div>
+ </div>
+</div>
+<div id="toast"></div>
+<div id="overlay"><div class="modal" id="modal"></div></div>
+<div id="startScreen"><div class="startcard">
+ <div style="font-size:35px">☁️ ✨ 🏰 ✨ ☁️</div>
+ <div class="logo">THE MYSTERY<br><span>OF FLOATING CASTLE</span></div>
+ <div style="font-weight:900;color:#b4f8f1;letter-spacing:2px;font-size:12px">PETUALANGAN MISTERI KERAJAAN LANGIT</div>
+ <p>Kerajaan Aerolith kehilangan lima Kristal Geometri. Pulau-pulau mulai jatuh dari langit! Jelajahi lima dunia, temukan rahasia lingkaran, bantu para penjaga, dan hadapi Penyihir Noctra.</p>
+ <div class="pills"><span>🧭 Eksplorasi</span><span>🧚 NPC & misi</span><span>📐 Teorema Lingkaran</span><span>💎 Koleksi kristal</span></div>
+ <button class="primary" id="startBtn">MULAI PETUALANGAN ✦</button><button class="secondary" id="howBtn">CARA BERMAIN</button>
+ <div style="font-size:11px;opacity:.75;margin-top:13px">Laptop: WASD / tombol panah • Ponsel: tombol arah di layar • Dekati objek lalu tekan INTERAKSI</div>
+ </div></div>
+</div>
+<script>
+(()=>{
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+let W=0,H=0,dpr=1,started=false,paused=true,frame=0,last=0,toastTimer=0;
+const worlds=[
+ {name:'THE CLOUDY VILLAGE',id:'Desa Awan',sky:['#63b7f7','#e3fbff'],ground:'#78c9c2',accent:'#f8d77c',desc:'Desa kecil di atas awan. Cari simbol lingkaran dan bantu penduduk!',npc:'Penduduk Nara',enemy:'Penjaga Gerbang',goal:'Temukan 3 simbol lingkaran dan pecahkan teka-teki unsur lingkaran.',lesson:'Unsur lingkaran',side:'Temukan bintang tersembunyi di balik rumah awan.',crystal:'Kristal Bentuk',portal:'Portal Air Terjun'},
+ {name:'THE CRYSTAL WATERFALL',id:'Air Terjun Kristal',sky:['#399de6','#b7fbf8'],ground:'#54b8d0',accent:'#9df8f1',desc:'Air terjun ajaib membelah jembatan. Buktikan hubungan sudut!',npc:'Peri Lumina',enemy:'Penjaga Arus',goal:'Aktifkan jembatan dengan sudut pusat dan sudut keliling.',lesson:'Sudut pusat & sudut keliling',side:'Ambil mutiara yang berkilau di dekat air.',crystal:'Kristal Sudut',portal:'Portal Pegunungan'},
+ {name:"THE DRAGON'S MOUNTAIN",id:'Pegunungan Naga',sky:['#5e72c9','#f5c6d7'],ground:'#8276ad',accent:'#ffb56e',desc:'Naga Ignis menjaga kristal di puncak gunung.',npc:'Naga Ignis',enemy:'Bayangan Naga',goal:'Selesaikan teka-teki diameter dan segiempat tali busur.',lesson:'Sudut keliling & segiempat tali busur',side:'Cari sisik naga yang jatuh di jalur gunung.',crystal:'Kristal Naga',portal:'Portal Mesin Terbang'},
+ {name:'THE FLOATING MACHINE',id:'Mesin Terbang Ajaib',sky:['#439dc9','#d7f7ff'],ground:'#8bb5c3',accent:'#ffd46f',desc:'Perbaiki mesin terbang dengan menghitung panjang tali busur.',npc:'Mekanik Pip',enemy:'Robot Rusak',goal:'Kumpulkan 3 komponen dan selesaikan teka-teki tali busur.',lesson:'Panjang tali busur',side:'Temukan roda gigi emas di belakang mesin.',crystal:'Kristal Mesin',portal:'Portal Istana Langit'},
+ {name:'THE ROYAL SKY CASTLE',id:'Istana Langit',sky:['#514aab','#e4c8ff'],ground:'#b1a4dc',accent:'#ffe18a',desc:'Istana utama terkunci. Hadapi Penyihir Noctra!',npc:'Putri Elara',enemy:'Penyihir Noctra',goal:'Gabungkan teorema lingkaran dan pulihkan lima kristal.',lesson:'Tantangan gabungan',side:'Temukan mahkota mini di taman istana.',crystal:'Kristal Kerajaan',portal:'Akhir Petualangan'}
+];
+const lessons=[
+{title:'Unsur-unsur lingkaran',text:'Lingkaran memiliki titik pusat, jari-jari (dari pusat ke keliling), diameter (tali busur melalui pusat), dan tali busur (menghubungkan dua titik pada keliling).',formula:'Diameter = 2 × jari-jari',q:'Sebuah lingkaran memiliki jari-jari 7 cm. Berapa panjang diameternya?',opts:['7 cm','14 cm','21 cm','49 cm'],ans:1,ex:'Diameter = 2 × r = 2 × 7 = 14 cm.'},
+{title:'Sudut pusat & sudut keliling',text:'Sudut pusat dan sudut keliling menghadap busur yang sama. Besar sudut pusat adalah dua kali sudut keliling.',formula:'∠ pusat = 2 × ∠ keliling',q:'Sudut keliling yang menghadap busur AB adalah 35°. Berapa sudut pusat yang menghadap busur AB yang sama?',opts:['17,5°','35°','70°','105°'],ans:2,ex:'Sudut pusat = 2 × 35° = 70° karena keduanya menghadap busur yang sama.'},
+{title:'Diameter & segiempat tali busur',text:'Sudut keliling yang menghadap diameter selalu 90°. Pada segiempat tali busur, jumlah sudut-sudut yang berhadapan adalah 180°.',formula:'∠ berhadapan = 180°',q:'ABCD adalah segiempat tali busur. Jika ∠A = 112°, berapa besar ∠C?',opts:['58°','68°','78°','112°'],ans:1,ex:'Sudut berhadapan berjumlah 180°. Jadi ∠C = 180° − 112° = 68°.'},
+{title:'Panjang tali busur',text:'Garis dari pusat yang tegak lurus tali busur membagi tali busur menjadi dua bagian sama panjang. Gunakan Teorema Pythagoras untuk menghitung setengah tali busur.',formula:'½ tali busur = √(r² − d²)',q:'Jari-jari lingkaran 13 cm. Jarak pusat ke tali busur 5 cm. Berapa panjang tali busur?',opts:['8 cm','12 cm','24 cm','26 cm'],ans:2,ex:'Setengah tali busur = √(13² − 5²) = √144 = 12 cm. Panjang penuh = 2 × 12 = 24 cm.'},
+{title:'Tantangan gabungan',text:'Gunakan semua konsep: sudut pusat dua kali sudut keliling, sudut berhadapan pada segiempat tali busur berjumlah 180°, dan sudut yang menghadap diameter adalah 90°.',formula:'∠ pusat = 2∠ keliling • sudut berhadapan = 180°',q:'Sudut keliling PQR = 32° menghadap busur PR. Sudut pusat yang menghadap busur PR adalah …',opts:['16°','32°','64°','148°'],ans:2,ex:'Sudut pusat = 2 × 32° = 64°. Perhatikan bahwa keduanya menghadap busur PR yang sama.'}
+];
+let state={world:0,x:0,y:0,coins:0,score:0,crystals:[],symbols:[],parts:[],sideDone:[],solved:[],unlocked:0,inventory:[],talked:[],hintLevel:0};
+let player={x:0,y:0,vx:0,vy:0,dir:0};const keys={};
+let objects=[],clouds=[],particles=[],lastInteract=0,activeQuestion=null;
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=canvas.clientWidth;H=canvas.clientHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+window.addEventListener('resize',resize);resize();
+function rand(seed){let x=Math.sin(seed*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+function setupWorld(){objects=[];let w=worlds[state.world];player.x=W*.5;player.y=H*.57;player.vx=player.vy=0;
+ clouds=Array.from({length:13},(_,i)=>({x:rand(i+state.world*33)*W,y:rand(i+88+state.world*20)*H*.9,s:25+rand(i+15)*60,speed:.12+rand(i+9)*.3}));
+ const add=(type,x,y,label,emoji,extra={})=>objects.push({type,x:x*W,y:y*H,label,emoji,near:0,...extra});
+ // landmarks / discoverables are placed in a navigable playfield
+ add('npc',.28,.55,w.npc,'🧚',{id:'npc'});
+ add('enemy',.73,.52,w.enemy,state.world===2?'🐉':state.world===4?'🧙':'🛡️',{id:'enemy'});
+ add('portal',.84,.77,w.portal,'🌀',{id:'portal'});
+ add('chest',.17,.75,'Peti Awan','🎁',{id:'chest'});
+ add('side',.57,.32,w.side,'✨',{id:'side'});
+ if(state.world===0){add('symbol',.43,.37,'Simbol Lingkaran I','◉',{id:'s1'});add('symbol',.65,.7,'Simbol Lingkaran II','◎',{id:'s2'});add('symbol',.36,.78,'Simbol Lingkaran III','◌',{id:'s3'});add('gate',.5,.2,'Gerbang Simbol','🚪',{id:'gate'})}
+ else if(state.world===1){add('bridge',.49,.48,'Jembatan Kristal','🌈',{id:'bridge'});add('pearl',.39,.76,'Mutiara Air','🫧',{id:'pearl'})}
+ else if(state.world===2){add('rune',.38,.36,'Rune Diameter','🔷',{id:'rune'});add('rune',.61,.72,'Rune Segiempat','🔶',{id:'rune2'})}
+ else if(state.world===3){add('part',.39,.38,'Komponen Mesin I','⚙️',{id:'p1'});add('part',.62,.7,'Komponen Mesin II','🔩',{id:'p2'});add('part',.22,.38,'Komponen Mesin III','🪛',{id:'p3'});add('machine',.5,.2,'Mesin Terbang','🚀',{id:'machine'})}
+ else {add('crown',.42,.72,'Mahkota Mini','👑',{id:'crown'});add('throne',.5,.2,'Singgasana Kristal','🏰',{id:'throne'})}
+ updateHUD();message('Jelajahi '+w.id+'. Dekati karakter dan benda, lalu tekan INTERAKSI.');}
+function message(t){$('message').textContent=t}
+function toast(t){let el=$('toast');el.textContent=t;el.style.opacity=1;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.opacity=0,2300)}
+function updateHUD(){let w=worlds[state.world];$('crystalCount').textContent=state.crystals.length+'/5';$('coinCount').textContent=state.coins;$('scoreCount').textContent=state.score;$('questTitle').textContent=state.solved.includes(state.world)?'Dunia terselamatkan!':w.id;$('questDesc').textContent=state.solved.includes(state.world)?'Kristal ditemukan. Cari portal untuk melanjutkan.':w.goal;
+ let p=state.solved.includes(state.world)?100:state.world===0?state.symbols.length/3*55:state.world===3?state.parts.filter(x=>x.startsWith('p')).length/3*55:0;if(state.crystals.includes(state.world))p=100;$('questProgress').style.width=p+'%'}
+function showHint(t){let h=$('hint');h.textContent=t;h.style.opacity=1;setTimeout(()=>h.style.opacity=0,2200)}
+function openModal(html){paused=true;$('modal').innerHTML=html;$('overlay').classList.add('show')}
+function closeModal(){paused=false;$('overlay').classList.remove('show');activeQuestion=null}
+function start(){ $('startScreen').style.display='none';started=true;paused=false;setupWorld();requestAnimationFrame(loop); }
+$('startBtn').onclick=start;
+$('howBtn').onclick=()=>openModal(`<div class="sub">PANDUAN PETUALANG</div><h2>Jelajahi Aerolith</h2><p>🧭 Bergerak dengan <b>WASD / tombol panah</b> atau tombol arah di layar.<br>✦ Dekati NPC, peti, simbol, dan portal. Tekan <b>INTERAKSI</b> untuk berbicara, mengambil benda, atau membuka teka-teki.<br>📐 Baca materi, gunakan petunjuk bertahap, lalu jawab tantangan.<br>💎 Selesaikan pertarungan teka-teki di setiap dunia untuk mendapatkan kristal dan membuka portal berikutnya.<br>🌟 Misi sampingan memberi koin bonus.</p><button class="primary" onclick="window.__closeModal()">MENGERTI!</button>`);
+window.__closeModal=closeModal;
+function intro(){openModal(`<div class="sub">BAB 1 • PANGGILAN KERAJAAN</div><h1>Kerajaan di Atas Awan</h1><p>Di atas awan, kerajaan Aerolith dijaga oleh lima Kristal Geometri. Namun Penyihir Noctra mencurinya. Pulau-pulau mulai kehilangan keseimbangan, jembatan langit terputus, dan istana terkunci.</p><p><b>Putri Elara:</b> “Petualang, hanya kecerdasanmu yang dapat menyatukan kembali kristal-kristal itu!”</p><p><b>Peri Lumina:</b> “Aku akan menemanimu. Amati lingkungan, pelajari petunjuk, dan jangan takut mencoba.”</p><button class="primary" onclick="window.__beginWorld()">MULAI DI DESA AWAN ✦</button>`)}
+window.__beginWorld=()=>{closeModal();setupWorld()};
+function speakNPC(){let i=state.world,w=worlds[i];let lines=[
+`<b>Putri Elara:</b> “Aerolith bergantung pada lima kristal. Bantu warga menemukan simbol lingkaran, lalu buktikan bahwa kamu layak menjadi penjaga kerajaan.”`,
+`<b>Peri Lumina:</b> “Ingat, sudut pusat besarnya dua kali sudut keliling yang menghadap busur sama. Gunakan rumus itu untuk mengaktifkan jembatan!”`,
+`<b>Naga Ignis:</b> “Aku menjaga kristal dengan teka-teki. Sudut yang menghadap diameter selalu siku-siku. Bisakah kamu juga menaklukkan segiempat tali busur?”`,
+`<b>Mekanik Pip:</b> “Mesin ini perlu tiga komponen. Garis dari pusat yang tegak lurus tali busur membaginya menjadi dua sama panjang. Hitung dengan cermat!”`,
+`<b>Putri Elara:</b> “Noctra bersembunyi di aula. Satukan semua pengetahuanmu dan pulihkan cahaya Aerolith!”`];
+openModal(`<div class="sub">${w.id.toUpperCase()} • DIALOG</div><h2>${w.npc}</h2><p>${lines[i]}</p><p><b>Misi sampingan:</b> ${w.side}</p><button class="primary" onclick="window.__talkQuest()">TERIMA MISI ✦</button><button class="secondary" onclick="window.__closeModal()">NANTI</button>`)}
+window.__talkQuest=()=>{let i=state.world;if(!state.talked.includes(i)){state.talked.push(i);state.score+=10;toast('Misi diterima! +10 skor')}closeModal();message(worlds[i].goal);updateHUD()};
+function lesson(i){let l=lessons[i];openModal(`<div class="sub">BUKU SIHIR LUMINA • MATERI</div><h2>📐 ${l.title}</h2><p>${l.text}</p><div style="padding:12px;border-radius:12px;background:#101b40;text-align:center;color:#ffe29a;font-weight:900">${l.formula}</div><p>Amati diagram, lalu lanjutkan ke tantangan penjaga.</p><div class="diagram"><svg viewBox="0 0 320 175" role="img" aria-label="Diagram lingkaran dengan pusat O, jari-jari, diameter dan sudut"><circle cx="160" cy="88" r="65" fill="#20376d" stroke="#9beef2" stroke-width="2.5"/><circle cx="160" cy="88" r="3.5" fill="#ffe08a"/><line x1="95" y1="88" x2="225" y2="88" stroke="#ffe08a" stroke-width="2"/><line x1="160" y1="88" x2="204" y2="40" stroke="#bca7ff" stroke-width="2"/><line x1="95" y1="88" x2="204" y2="40" stroke="#ff9dca" stroke-width="2"/><text x="168" y="103" fill="white" font-size="11">O</text><text x="84" y="82" fill="white" font-size="11">A</text><text x="229" y="92" fill="white" font-size="11">B</text><text x="207" y="35" fill="white" font-size="11">C</text><text x="165" y="60" fill="#ffe08a" font-size="10">r</text><text x="147" y="80" fill="#ffe08a" font-size="9">pusat</text></svg></div><button class="primary" onclick="window.__startQuiz(${i})">HADAPI TEKA-TEKI ✦</button><button class="secondary" onclick="window.__closeModal()">KEMBALI</button>`)}
+window.__startQuiz=(i)=>{closeModal();quiz(i)};
+function quiz(i){let l=lessons[i];activeQuestion={i,attempt:0};openModal(`<div class="sub">PERTARUNGAN TEKA-TEKI • DUNIA ${i+1}/5</div><h2>✨ ${worlds[i].enemy}</h2><p>${l.q}</p><div class="options">${l.opts.map((o,j)=>`<button onclick="window.__answer(${j})">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div id="feedback" style="min-height:25px;font-size:13px;line-height:1.5"></div><button class="secondary" onclick="window.__hintQuiz()">PETUNJUK BERTAHAP</button><button class="secondary" onclick="window.__closeModal()">KELUAR</button>`)}
+window.__answer=(j)=>{if(!activeQuestion)return;let q=activeQuestion,l=lessons[q.i],fb=$('feedback');if(j===l.ans){fb.innerHTML=`<span style="color:#80f4c9;font-weight:900">BENAR! ✨</span><br>${l.ex}<br><b>+100 skor • +25 koin</b>`;document.querySelectorAll('.options button')[j].classList.add('correct');state.score+=100;state.coins+=25;state.solved.push(q.i);if(!state.crystals.includes(q.i))state.crystals.push(q.i);state.unlocked=Math.max(state.unlocked,Math.min(4,q.i+1));updateHUD();message('Teka-teki berhasil! '+worlds[q.i].crystal+' didapatkan.');setTimeout(()=>{closeModal();if(q.i===4)ending();else toast('Kristal diperoleh! Portal berikutnya aktif.');},1800)}else{q.attempt++;document.querySelectorAll('.options button')[j].classList.add('wrong');fb.innerHTML=`<span style="color:#ffb1ce;font-weight:900">Belum tepat, coba lagi!</span><br>${q.attempt>=2?'Ingat: '+l.formula:'Periksa kembali hubungan sudut atau rumusnya.'}`;state.score=Math.max(0,state.score-5);$('scoreCount').textContent=state.score}};
+window.__hintQuiz=()=>{if(!activeQuestion)return;let q=activeQuestion,l=lessons[q.i];q.attempt++;let tips=['Perhatikan kata kunci pada soal dan tuliskan hubungan yang diketahui.','Gunakan rumus: '+l.formula,'Langkah penyelesaian: '+l.ex];$('feedback').innerHTML='<span style="color:#ffe29a;font-weight:900">PETUNJUK '+Math.min(q.attempt,3)+'/3</span><br>'+tips[Math.min(q.attempt-1,2)];if(q.attempt===1)state.score=Math.max(0,state.score-2)};
+function sideQuest(o){let i=state.world;if(state.sideDone.includes(i)){toast('Misi sampingan sudah selesai!');return}state.sideDone.push(i);state.coins+=15;state.score+=30;state.inventory.push(worlds[i].side);message('Misi sampingan selesai! +15 koin, +30 skor.');toast('Hadiah misi sampingan +15 🪙');updateHUD();o.type='used';o.emoji='🌟';}
+function interact(){if(!started||paused)return;let nearest=null,dist=1e9;for(let o of objects){if(o.type==='used')continue;let d=Math.hypot(o.x-player.x,o.y-player.y);if(d<dist){dist=d;nearest=o}}
+ if(!nearest||dist>95){showHint('Dekati karakter atau benda yang bercahaya!');return}
+ switch(nearest.type){
+ case'npc':speakNPC();break;
+ case'enemy':if(state.solved.includes(state.world)){openModal(`<div class="sub">PENJAGA DITAKLUKKAN</div><h2>🏆 Tantangan selesai!</h2><p>${worlds[state.world].enemy} mengakui keberanianmu. Kristal telah aman dalam genggamanmu.</p><button class="primary" onclick="window.__closeModal()">LANJUTKAN</button>`)}else lesson(state.world);break;
+ case'symbol':if(!state.symbols.includes(nearest.id)){state.symbols.push(nearest.id);state.coins+=5;state.score+=20;nearest.type='used';nearest.emoji='✨';toast('Simbol ditemukan! +5 koin');updateHUD();if(state.symbols.length>=3){message('Tiga simbol terkumpul! Temui Penjaga Gerbang untuk teka-teki.');openModal(`<div class="sub">GERBANG DESA AWAN</div><h2>🔐 Simbol telah menyala!</h2><p>Tiga simbol lingkaran membuka segel gerbang. Sekarang hadapi teka-teki unsur lingkaran.</p><button class="primary" onclick="window.__startQuiz(0)">BUKA GERBANG ✦</button>`)}else message('Simbol '+state.symbols.length+'/3 ditemukan. Cari simbol lainnya!')}break;
+ case'gate':if(state.symbols.length<3)showHint('Gerbang terkunci. Kumpulkan 3 simbol lingkaran!');else lesson(0);break;
+ case'portal':if(!state.crystals.includes(state.world)){showHint('Portal terkunci! Kalahkan penjaga dan dapatkan kristal.');}else if(state.world>=4){ending()}else{state.world++;setupWorld();toast('Memasuki '+worlds[state.world].id+'!');}break;
+ case'side':sideQuest(nearest);break;
+ case'chest':if(!state.inventory.includes('Peti Awan')){state.inventory.push('Peti Awan');state.coins+=10;state.score+=15;nearest.type='used';nearest.emoji='📦';toast('Peti dibuka! +10 koin');updateHUD()}else toast('Peti ini sudah kosong.');break;
+ case'pearl':case'rune':case'rune2':case'bridge':case'machine':case'part':case'crown':case'throne':
+  if(nearest.type==='part'){if(!state.parts.includes(nearest.id)){state.parts.push(nearest.id);nearest.type='used';nearest.emoji='✅';state.coins+=5;state.score+=15;toast('Komponen terkumpul! '+state.parts.filter(x=>x.startsWith('p')).length+'/3');updateHUD()}break}
+  if(nearest.type==='machine'&&state.parts.filter(x=>x.startsWith('p')).length<3){showHint('Mesin butuh 3 komponen! Cari roda gigi di sekitar area.');break}
+  if(nearest.type==='crown'){sideQuest(nearest);break}
+  if(nearest.type==='pearl'){sideQuest(nearest);break}
+  if(nearest.type==='bridge'&&state.solved.includes(1)){toast('Jembatan aktif! Cari portal.');break}
+  lesson(state.world);break;
+ default:showHint('Benda ini tampak ajaib, tetapi belum bisa digunakan.')
+ }
+}
+$('interact').addEventListener('click',interact);
+document.querySelectorAll('[data-move]').forEach(b=>{let k=b.dataset.move;const map={up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'};b.addEventListener('pointerdown',e=>{e.preventDefault();keys[map[k]]=true;b.setPointerCapture(e.pointerId)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>keys[map[k]]=false))});
+window.addEventListener('keydown',e=>{let k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();keys[e.key]=true;keys[k]=true;if(k==='e'||k===' '||k==='enter')interact();if(k==='escape'&&paused)closeModal()});
+window.addEventListener('keyup',e=>{keys[e.key]=false;keys[e.key.toLowerCase()]=false});
+function drawCloud(x,y,s,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(x,y,s*.75,s*.25,0,0,Math.PI*2);ctx.ellipse(x-s*.3,y-s*.1,s*.36,s*.29,0,0,Math.PI*2);ctx.ellipse(x+s*.12,y-s*.2,s*.42,s*.4,0,0,Math.PI*2);ctx.ellipse(x+s*.48,y-s*.05,s*.3,s*.24,0,0,Math.PI*2);ctx.fill();ctx.restore()}
+function polygon(points,fill,stroke){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
+function drawIsland(){let y=H*.87;ctx.save();ctx.shadowColor='#1c4c9b55';ctx.shadowBlur=24;polygon([[W*.04,y-H*.08],[W*.13,y-H*.16],[W*.3,y-H*.19],[W*.48,y-H*.14],[W*.65,y-H*.2],[W*.85,y-H*.15],[W*.97,y-H*.08],[W*.91,y+H*.02],[W*.76,y+H*.08],[W*.57,y+H*.04],[W*.4,y+H*.1],[W*.2,y+H*.05],[W*.08,y+H*.02]],worlds[state.world].ground,'#ffffff75');ctx.restore();
+ // island floating rock strata
+ polygon([[W*.09,y+H*.01],[W*.28,y+H*.03],[W*.45,y+H*.02],[W*.62,y+H*.03],[W*.88,y],[W*.77,y+H*.08],[W*.57,y+H*.13],[W*.39,y+H*.12],[W*.2,y+H*.08]],'#626baf');
+ for(let i=0;i<9;i++){let x=W*(.12+i*.09);ctx.fillStyle=['#ffffff40','#d5fbff55','#9cebe966'][i%3];ctx.beginPath();ctx.ellipse(x,y-H*(.07+rand(i+state.world)*.08),W*.045,H*.018,0,0,Math.PI*2);ctx.fill()}
+}
+function drawCastle(x,y,s){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.shadowColor='#ffd976';ctx.shadowBlur=14;ctx.fillStyle='#fff0c0';ctx.strokeStyle='#ad8b59';ctx.lineWidth=1.5;
+ // main castle body
+ ctx.fillRect(-40,-62,80,62);ctx.fillRect(-65,-42,25,42);ctx.fillRect(40,-45,25,45);
+ polygon([[-48,-62],[0,-99],[48,-62]],'#ffdb82','#a77b4a');polygon([[-70,-42],[-53,-72],[-36,-42]],'#e8bb6e','#a77b4a');polygon([[36,-45],[52,-76],[69,-45]],'#e8bb6e','#a77b4a');
+ ctx.fillStyle='#6e8dd2';for(let x0 of [-25,0,25]){ctx.beginPath();ctx.arc(x0,-43,7,Math.PI,0);ctx.fillRect(x0-7,-43,14,16);ctx.fill()}
+ ctx.fillStyle='#9c74cb';ctx.fillRect(-9,-28,18,28);ctx.fillStyle='#ffe7a0';ctx.beginPath();ctx.arc(0,-26,2,0,7);ctx.fill();
+ ctx.restore()}
+function drawWaterfall(){let x=W*.5,y=H*.49;ctx.save();ctx.globalAlpha=.7;let grad=ctx.createLinearGradient(x,y,x,y+H*.25);grad.addColorStop(0,'#d8ffff');grad.addColorStop(1,'#38d9f5');ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(x-24,y);ctx.bezierCurveTo(x-36,y+40,x-9,y+70,x-22,y+H*.25);ctx.lineTo(x+28,y+H*.25);ctx.bezierCurveTo(x+10,y+70,x+38,y+40,x+24,y);ctx.fill();ctx.restore()}
+function drawWorldDecor(){let i=state.world;
+ if(i===0){drawCastle(W*.5,H*.47,.85);for(let j=0;j<5;j++){let x=W*(.13+j*.17),y=H*(.57+(j%2)*.08);ctx.fillStyle=['#f4cfa0','#c4b2ff','#fff0b0'][j%3];ctx.fillRect(x-18,y-28,36,28);polygon([[x-23,y-28],[x,y-48],[x+23,y-28]],'#8c77c9');ctx.fillStyle='#8eeaff';ctx.fillRect(x-5,y-17,10,17)}}
+ if(i===1){drawWaterfall();for(let j=0;j<3;j++){let x=W*(.22+j*.28);ctx.fillStyle='#8ef9f4';ctx.beginPath();ctx.ellipse(x,H*.48,54,15,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#baffff';ctx.fillRect(x-30,H*.47,60,8)}}
+ if(i===2){polygon([[W*.18,H*.72],[W*.37,H*.35],[W*.5,H*.56],[W*.67,H*.26],[W*.86,H*.72]],'#7565a8','#d7c6ff');polygon([[W*.32,H*.45],[W*.37,H*.35],[W*.42,H*.44],[W*.37,H*.42]],'#fff2f8');polygon([[W*.6,H*.4],[W*.67,H*.26],[W*.74,H*.42],[W*.67,H*.37]],'#fff2f8')}
+ if(i===3){drawCastle(W*.5,H*.52,.5);ctx.save();ctx.translate(W*.5,H*.58);ctx.strokeStyle='#ffe28a';ctx.lineWidth=8;ctx.beginPath();ctx.ellipse(0,0,85,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#8ceee6';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,0,52,16,0,0,Math.PI*2);ctx.stroke();ctx.restore();for(let j=0;j<3;j++){ctx.fillStyle='#c7d5e8';ctx.fillRect(W*(.32+j*.16),H*.6,12,45);ctx.fillStyle='#6a80ad';ctx.fillRect(W*(.32+j*.16)+3,H*.61,6,40)}}
+ if(i===4){drawCastle(W*.5,H*.49,1.45);ctx.strokeStyle='#ffe7a0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(W*.5,H*.49,100,0,Math.PI*2);ctx.stroke();for(let j=0;j<5;j++){ctx.fillStyle=['#a9f7ff','#d2b0ff','#ffdc7c'][j%3];ctx.beginPath();ctx.arc(W*(.35+j*.075),H*(.36+Math.sin(j)*.04),4+rand(j)*3,0,Math.PI*2);ctx.fill()}}
+}
+function drawObject(o){let bob=Math.sin(frame*.05+o.x*.03)*4,x=o.x,y=o.y+bob;ctx.save();ctx.translate(x,y);ctx.shadowColor=o.type==='crystal'?'#65fff4':'#18264b66';ctx.shadowBlur=12;
+ if(o.type==='npc'||o.type==='enemy'){ctx.fillStyle='#17234a55';ctx.beginPath();ctx.ellipse(0,21,22,7,0,0,Math.PI*2);ctx.fill();ctx.font='30px system-ui';ctx.textAlign='center';ctx.fillText(o.emoji,0,6);ctx.font='bold 10px system-ui';ctx.fillStyle='#fff';ctx.fillText(o.label,0,-21);if(o.type==='npc'){ctx.fillStyle='#ffe18a';ctx.font='bold 15px system-ui';ctx.fillText('…',20,-10)}}
+ else {ctx.font='29px system-ui';ctx.textAlign='center';ctx.fillText(o.emoji,0,7);ctx.font='bold 10px system-ui';ctx.fillStyle='#fff';ctx.fillText(o.label,0,-19)}
+ if(Math.hypot(o.x-player.x,o.y-player.y)<90){ctx.strokeStyle='#ffe58c';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,25,28,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#ffe58c';ctx.font='bold 10px system-ui';ctx.fillText('E',22,-25)}
+ ctx.restore()}
+function drawPlayer(){let x=player.x,y=player.y;ctx.save();ctx.translate(x,y);ctx.fillStyle='#14245055';ctx.beginPath();ctx.ellipse(0,17,15,5,0,0,Math.PI*2);ctx.fill();ctx.shadowColor='#8df8ff';ctx.shadowBlur=10;ctx.fillStyle='#ffdc7e';ctx.beginPath();ctx.arc(0,-10,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f3f7ff';ctx.beginPath();ctx.moveTo(-10,0);ctx.lineTo(10,0);ctx.lineTo(14,15);ctx.lineTo(-14,15);ctx.closePath();ctx.fill();ctx.fillStyle='#6756b7';ctx.fillRect(-9,14,7,8);ctx.fillRect(3,14,7,8);ctx.fillStyle='#433b78';ctx.beginPath();ctx.arc(0,-12,9,Math.PI,Math.PI*2);ctx.fill();ctx.restore()}
+function draw(){let w=worlds[state.world],g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,w.sky[0]);g.addColorStop(1,w.sky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // dreamy sky stars and clouds
+ for(let i=0;i<70;i++){let x=rand(i+2)*W,y=rand(i+100)*H*.74;ctx.globalAlpha=.2+rand(i+20)*.45;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,rand(i+40)*1.8+.4,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+ clouds.forEach(c=>{c.x-=c.speed;if(c.x<-100)c.x=W+100;drawCloud(c.x,c.y,c.s,.48)});
+ // far floating islands
+ for(let i=0;i<4;i++){let x=W*(.12+i*.27),y=H*(.31+(i%2)*.1);polygon([[x-55,y],[x-30,y-17],[x+28,y-13],[x+54,y]],'#ffffff66');polygon([[x-40,y],[x+42,y],[x+20,y+24],[x-13,y+31]],'#6c93c8aa')}
+ drawWorldDecor();drawIsland();
+ // winding stepping-stone path
+ for(let j=0;j<8;j++){let x=W*(.13+j*.105),y=H*(.78+Math.sin(j*.7)*.025);ctx.fillStyle='#f6ffff9c';ctx.beginPath();ctx.ellipse(x,y,19,7,-.1,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ffffff6b';ctx.stroke()}
+ objects.forEach(drawObject);drawPlayer();
+ // magic motes
+ for(let i=0;i<10;i++){let x=(rand(i+frame*.09)*W),y=(rand(i+frame*.06+10)*H*.78);ctx.fillStyle=i%2?'#fff4bc88':'#a6fff288';ctx.beginPath();ctx.arc(x,y,1.5+rand(i)*2,0,Math.PI*2);ctx.fill()}
+ // world title
+ ctx.fillStyle='#ffffffd9';ctx.font=`900 ${Math.max(12,Math.min(18,W*.018))}px system-ui`;ctx.textAlign='center';ctx.shadowColor='#1c377d';ctx.shadowBlur=7;ctx.fillText(w.name,W/2, H*.13);ctx.shadowBlur=0;
+}
+function loop(t){if(!started)return;requestAnimationFrame(loop);let dt=Math.min((t-last)/16.67||1,2);last=t;frame++;
+ if(!paused){let dx=0,dy=0;if(keys.ArrowUp||keys.w)dy--;if(keys.ArrowDown||keys.s)dy++;if(keys.ArrowLeft||keys.a)dx--;if(keys.ArrowRight||keys.d)dx++;if(dx&&dy){dx*=.707;dy*=.707}player.x+=dx*2.65*dt;player.y+=dy*2.3*dt;player.x=Math.max(W*.07,Math.min(W*.93,player.x));player.y=Math.max(H*.27,Math.min(H*.84,player.y));}
+ draw()}
+function ending(){openModal(`<div style="text-align:center;font-size:45px">👑 💎 ✨</div><div class="sub">AEROLITH TELAH SELAMAT</div><h1>Legenda Penjaga Langit!</h1><p>Lima Kristal Geometri kembali bersinar. Pulau-pulau kembali seimbang, mesin terbang aktif, dan jembatan pelangi menyatukan kerajaan.</p><p><b>Putri Elara:</b> “Kau bukan hanya petualang, tetapi pelindung pengetahuan!”</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin:18px 0"><div class="glass" style="padding:12px"><div style="font-size:24px">💎</div><b>${state.crystals.length}/5</b><div style="font-size:10px">Kristal</div></div><div class="glass" style="padding:12px"><div style="font-size:24px">⭐</div><b>${state.score}</b><div style="font-size:10px">Skor akhir</div></div><div class="glass" style="padding:12px"><div style="font-size:24px">🪙</div><b>${state.coins}</b><div style="font-size:10px">Koin</div></div></div><h2>📘 Rekap Belajar</h2><p>✓ Unsur lingkaran<br>✓ Sudut pusat dan sudut keliling<br>✓ Sudut keliling yang menghadap diameter<br>✓ Segiempat tali busur<br>✓ Panjang tali busur dengan Teorema Pythagoras</p><p style="font-size:12px">Ingat: sudut pusat = 2 × sudut keliling (busur sama); sudut berhadapan pada segiempat tali busur berjumlah 180°; panjang tali busur dapat dihitung dengan Teorema Pythagoras.</p><button class="primary" onclick="window.__restart()">MAIN LAGI ↻</button><button class="secondary" onclick="window.print()">CETAK REKAP</button>`)}
+window.__restart=()=>{state={world:0,x:0,y:0,coins:0,score:0,crystals:[],symbols:[],parts:[],sideDone:[],solved:[],unlocked:0,inventory:[],talked:[],hintLevel:0};closeModal();setupWorld();intro()};
+$('startBtn').addEventListener('click',()=>setTimeout(intro,200));
+ // first run render even before start
+setupWorld();draw();
+})();
+</script>
+</body>
+</html>

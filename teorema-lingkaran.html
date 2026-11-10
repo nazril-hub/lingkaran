@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forest Geometry — Kuis Teorema Lingkaran</title>
+<style>
+:root{--forest:#173f2a;--green:#39734b;--mint:#e8f1e6;--cream:#fbfaf4;--ink:#203128;--muted:#64736a}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#e6efe2,#f8f7ef);color:var(--ink);min-height:100vh;padding:0}
+.quiz-navbar{position:sticky;top:0;z-index:50;background:rgba(23,63,42,0.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.15);padding:10px 20px;box-shadow:0 4px 18px rgba(23,63,42,0.2)}
+.nav-wrap{max-width:850px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nav-back{display:inline-flex;align-items:center;gap:8px;background:#ffffff;color:var(--forest);font-weight:bold;font-size:0.85rem;padding:8px 16px;border-radius:10px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform .15s}
+.nav-back:hover{transform:translateY(-1px);background:#f4f8f3}
+.nav-title{color:#e8f4e6;font-size:0.9rem;font-weight:bold;letter-spacing:0.5px}
+.nav-home{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:0.8rem;font-weight:bold}
+main{max-width:850px;margin:auto;padding:24px 20px}
+.hero{background:linear-gradient(120deg,#153b28,#39734b);color:white;padding:30px;border-radius:22px;margin-bottom:22px;box-shadow:0 10px 28px #173f2a22}
+.hero .eyebrow{letter-spacing:2px;font-size:.78rem;color:#d5e7d2;font-weight:bold}
+h1{font-size:clamp(1.8rem,5vw,2.7rem);margin:12px 0}
+.hero p{line-height:1.6;color:#edf5eb;margin-bottom:0}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+.meta span{background:#ffffff20;border:1px solid #ffffff44;padding:7px 11px;border-radius:30px;font-size:.85rem}
+.instructions,.question,.result{background:white;border:1px solid #dce7dc;border-radius:17px;padding:21px;margin:15px 0;box-shadow:0 5px 18px #173f2a0b}
+.instructions h2{margin:0 0 8px;font-size:1.1rem}
+.instructions p{margin:0;color:var(--muted);line-height:1.55}
+.qhead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.number{width:38px;height:38px;border-radius:12px;background:var(--mint);color:var(--forest);display:grid;place-items:center;font-weight:bold}
+.qtitle{font-weight:bold}
+.points{margin-left:auto;color:var(--muted);font-size:.8rem;white-space:nowrap}
+.question p{line-height:1.6;margin:0 0 15px}
+.option{display:flex;align-items:flex-start;gap:10px;border:1px solid #dce5dc;padding:12px 13px;border-radius:12px;margin:9px 0;cursor:pointer;transition:.15s}
+.option:hover{background:#f4f8f2;border-color:#91b39a}
+.option input{margin-top:3px;accent-color:var(--green)}
+.option:has(input:checked){background:#edf5eb;border-color:#6c9b75}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}
+button{border:0;border-radius:12px;padding:13px 20px;font-weight:bold;font-size:1rem;cursor:pointer}
+#submit{background:var(--forest);color:white;flex:1}
+#reset{background:#e7eee5;color:var(--forest)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.progress-wrap{color:var(--muted);font-size:.9rem;margin-top:10px}
+.progress{height:8px;background:#e7eee5;border-radius:20px;overflow:hidden;margin-top:8px}
+#bar{height:100%;width:0;background:#4e8a5b;transition:.2s}
+.result{text-align:center;padding:26px;display:none}
+.score{font-size:3.3rem;font-weight:800;color:var(--green);margin:8px}
+.feedback{font-weight:bold;font-size:1.15rem}
+.explanation{text-align:left;background:#f5f8f3;border-radius:12px;padding:13px;margin-top:12px;line-height:1.5}
+.explanation strong{display:block;margin-bottom:5px}
+.correct{color:#287443}.wrong{color:#b34238}
+footer{text-align:center;color:var(--muted);font-size:.82rem;padding:18px}
+@media(max-width:560px){main{padding:14px 12px}.hero{padding:23px}.question,.instructions,.result{padding:17px}.points{font-size:.72rem}.nav-title{display:none}.nav-back{font-size:0.8rem;padding:6px 12px}}
+</style>
+</head>
+<body>
+<nav class="quiz-navbar">
+  <div class="nav-wrap">
+    <a href="index.html" class="nav-back" title="Kembali ke Landing Page Utama">
+      <span>⇦</span>
+      <span>Kembali ke Landing Page</span>
+    </a>
+    <div class="nav-title">🌿 Kuis Teorema Lingkaran</div>
+    <a href="index.html" class="nav-home" title="Ke Beranda Utama">⌂ Beranda</a>
+  </div>
+</nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">🌿 FOREST GEOMETRY · MATEMATIKA SMP</div>
+  <h1>Kuis Teorema Lingkaran</h1>
+  <p>Uji pemahamanmu tentang sudut pusat, sudut keliling, segi empat tali busur, dan sudut yang menghadap diameter.</p>
+  <div class="meta"><span>5 soal pilihan ganda</span><span>20 poin per jawaban benar</span><span>Skor maksimal 100</span></div>
+</header>
+
+<section class="instructions">
+  <h2>📘 Petunjuk Pengerjaan</h2>
+  <p>Pilih satu jawaban yang paling tepat pada setiap soal. Pastikan semua soal sudah dijawab, kemudian tekan tombol <b>Kumpulkan Jawaban</b> untuk melihat skor dan pembahasan.</p>
+  <div class="progress-wrap"><span id="progressText">Jawaban terisi: 0 dari 5</span><div class="progress"><div id="bar"></div></div></div>
+</section>
+
+<form id="quiz">
+<section class="question" data-q="0">
+  <div class="qhead"><div class="number">1</div><div class="qtitle">Sudut Pusat dan Sudut Keliling</div><span class="points">20 poin</span></div>
+  <p>Sudut pusat AOB dan sudut keliling ACB menghadap busur AB yang sama. Jika besar sudut pusat AOB adalah 100°, berapakah besar sudut keliling ACB?</p>
+  <label class="option"><input type="radio" name="q0" value="A"> A. 25°</label>
+  <label class="option"><input type="radio" name="q0" value="B"> B. 50°</label>
+  <label class="option"><input type="radio" name="q0" value="C"> C. 100°</label>
+  <label class="option"><input type="radio" name="q0" value="D"> D. 200°</label>
+</section>
+
+<section class="question" data-q="1">
+  <div class="qhead"><div class="number">2</div><div class="qtitle">Sudut Keliling</div><span class="points">20 poin</span></div>
+  <p>Dua sudut keliling menghadap busur yang sama. Jika sudut keliling pertama sebesar 42°, berapakah besar sudut keliling kedua?</p>
+  <label class="option"><input type="radio" name="q1" value="A"> A. 21°</label>
+  <label class="option"><input type="radio" name="q1" value="B"> B. 42°</label>
+  <label class="option"><input type="radio" name="q1" value="C"> C. 84°</label>
+  <label class="option"><input type="radio" name="q1" value="D"> D. 138°</label>
+</section>
+
+<section class="question" data-q="2">
+  <div class="qhead"><div class="number">3</div><div class="qtitle">Segi Empat Tali Busur</div><span class="points">20 poin</span></div>
+  <p>ABCD merupakan segi empat tali busur. Jika besar sudut A adalah 75°, berapakah besar sudut C?</p>
+  <label class="option"><input type="radio" name="q2" value="A"> A. 75°</label>
+  <label class="option"><input type="radio" name="q2" value="B"> B. 90°</label>
+  <label class="option"><input type="radio" name="q2" value="C"> C. 105°</label>
+  <label class="option"><input type="radio" name="q2" value="D"> D. 115°</label>
+</section>
+
+<section class="question" data-q="3">
+  <div class="qhead"><div class="number">4</div><div class="qtitle">Sudut yang Menghadap Diameter</div><span class="points">20 poin</span></div>
+  <p>AB merupakan diameter lingkaran dan titik C berada pada keliling lingkaran. Berapakah besar sudut ACB?</p>
+  <label class="option"><input type="radio" name="q3" value="A"> A. 45°</label>
+  <label class="option"><input type="radio" name="q3" value="B"> B. 60°</label>
+  <label class="option"><input type="radio" name="q3" value="C"> C. 90°</label>
+  <label class="option"><input type="radio" name="q3" value="D"> D. 180°</label>
+</section>
+
+<section class="question" data-q="4">
+  <div class="qhead"><div class="number">5</div><div class="qtitle">Penerapan dalam Kehidupan Sehari-hari</div><span class="points">20 poin</span></div>
+  <p>Sebuah taman berbentuk lingkaran memiliki pusat O. Sudut pusat AOB adalah 120°. Jika sudut keliling ACB menghadap busur AB yang sama, berapakah besar sudut ACB?</p>
+  <label class="option"><input type="radio" name="q4" value="A"> A. 30°</label>
+  <label class="option"><input type="radio" name="q4" value="B"> B. 60°</label>
+  <label class="option"><input type="radio" name="q4" value="C"> C. 120°</label>
+  <label class="option"><input type="radio" name="q4" value="D"> D. 240°</label>
+</section>
+
+<div class="actions">
+  <button id="submit" type="submit" disabled>Kumpulkan Jawaban</button>
+  <button id="reset" type="button">Ulangi Kuis</button>
+</div>
+</form>
+
+<section class="result" id="result" aria-live="polite">
+  <div style="font-size:2rem">🌳</div>
+  <div>HASIL ASESMEN</div>
+  <div class="score" id="score">0/100</div>
+  <div class="feedback" id="feedback"></div>
+  <p id="summary"></p>
+  <div id="review"></div>
+  <button id="again" type="button" style="background:#173f2a;color:white;margin-top:18px">Kerjakan Lagi</button>
+</section>
+<footer>Forest Geometry · Belajar Teorema Lingkaran dengan menyenangkan</footer>
+</main>
+<script>
+const answerKey = ["B","B","C","C","B"];
+const explanations = [
+"Sudut keliling yang menghadap busur yang sama besarnya setengah sudut pusat. Jadi, 100° ÷ 2 = 50°.",
+"Sudut-sudut keliling yang menghadap busur yang sama memiliki besar yang sama, yaitu 42°.",
+"Sudut-sudut yang berhadapan pada segi empat tali busur berjumlah 180°. Jadi, sudut C = 180° − 75° = 105°.",
+"Sudut keliling yang menghadap diameter selalu merupakan sudut siku-siku, yaitu 90°.",
+"Sudut keliling = setengah sudut pusat = ½ × 120° = 60°."
+];
+const quiz=document.getElementById("quiz"), submit=document.getElementById("submit");
+const result=document.getElementById("result"), reset=document.getElementById("reset");
+function updateProgress(){
+  const count=answerKey.filter((_,i)=>quiz.querySelector(`input[name="q${i}"]:checked`)).length;
+  document.getElementById("progressText").textContent=`Jawaban terisi: ${count} dari 5`;
+  document.getElementById("bar").style.width=(count*20)+"%";
+  submit.disabled=count!==5;
+}
+quiz.addEventListener("change",updateProgress);
+quiz.addEventListener("submit",e=>{
+  e.preventDefault();
+  const chosen=answerKey.map((_,i)=>quiz.querySelector(`input[name="q${i}"]:checked`)?.value);
+  if(chosen.some(v=>!v)){alert("Silakan jawab semua pertanyaan terlebih dahulu.");return;}
+  let correct=0;
+  chosen.forEach((v,i)=>{if(v===answerKey[i])correct++;});
+  const score=correct*20;
+  document.getElementById("score").textContent=score+"/100";
+  document.getElementById("feedback").textContent=score>=80?"Hebat! Kamu memahami teorema lingkaran dengan baik.":score===60?"Bagus! Terus berlatih agar pemahamanmu semakin kuat.":"Jangan menyerah! Pelajari kembali materi dan coba lagi.";
+  document.getElementById("summary").textContent=`Jawaban benar: ${correct} dari 5 soal · Jawaban salah: ${5-correct}`;
+  document.getElementById("review").innerHTML=chosen.map((v,i)=>`
+    <div class="explanation">
+      <strong class="${v===answerKey[i]?'correct':'wrong'}">Soal ${i+1}: ${v===answerKey[i]?'Benar ✓':'Belum tepat ✗'} · Kunci: ${answerKey[i]}</strong>
+      ${explanations[i]}
+    </div>`).join("");
+  result.style.display="block";
+  submit.disabled=true;
+  result.scrollIntoView({behavior:"smooth",block:"start"});
+});
+function restart(){
+  quiz.reset();result.style.display="none";submit.disabled=true;updateProgress();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+reset.addEventListener("click",restart);
+document.getElementById("again").addEventListener("click",restart);
+</script>
+</body>
+</html>
